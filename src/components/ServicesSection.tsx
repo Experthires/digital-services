@@ -1,7 +1,6 @@
-import { Palette, Video, Globe, Sparkles, Share2 } from "lucide-react";
+import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const AFFILIATE_LINK = "https://go.fiverr.com/visit/?bta=YOUR_AFFILIATE_ID&brand=fiverrhybrid";
+import { toast } from "sonner";
 
 const services = [
   {
@@ -39,7 +38,33 @@ const services = [
     price: "Starting at $5",
     popular: false,
   },
+  {
+    icon: PenTool,
+    title: "Copywriting",
+    description: "Compelling sales copy, blog posts, email campaigns, and website content that converts.",
+    price: "Starting at $10",
+    popular: true,
+  },
 ];
+
+const handleShare = async (serviceTitle: string) => {
+  const shareData = {
+    title: `${serviceTitle} on Fiverr`,
+    text: `Check out amazing ${serviceTitle} services!`,
+    url: window.location.href,
+  };
+  
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch (err) {
+      // User cancelled or error
+    }
+  } else {
+    await navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard!");
+  }
+};
 
 const ServicesSection = () => {
   return (
@@ -60,18 +85,23 @@ const ServicesSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {services.map((service, index) => (
-            <a
+            <div
               key={index}
-              href={AFFILIATE_LINK}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow cursor-pointer"
+              className="group relative p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
             >
               {service.popular && (
                 <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
                   Popular
                 </span>
               )}
+              
+              <button
+                onClick={() => handleShare(service.title)}
+                className="absolute top-4 left-4 p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100"
+                aria-label={`Share ${service.title}`}
+              >
+                <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
+              </button>
               
               <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <service.icon className="w-7 h-7 text-primary" />
@@ -88,15 +118,17 @@ const ServicesSection = () => {
               <p className="text-primary font-semibold">
                 {service.price}
               </p>
-            </a>
+            </div>
           ))}
         </div>
 
-        <div className="text-center">
-          <Button variant="outline" size="lg" asChild>
-            <a href={AFFILIATE_LINK} target="_blank" rel="noopener noreferrer">
-              Explore All Categories
-            </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button variant="outline" size="lg" className="gap-2">
+            <Settings className="w-4 h-4" />
+            Manage My Links
+          </Button>
+          <Button variant="outline" size="lg">
+            Explore All Categories
           </Button>
         </div>
       </div>
