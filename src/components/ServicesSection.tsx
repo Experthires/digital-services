@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import ManageLinksModal from "./ManageLinksModal";
 
 const services = [
   {
@@ -67,6 +69,8 @@ const handleShare = async (serviceTitle: string) => {
 };
 
 const ServicesSection = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <section id="services" className="py-20 md:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/50 to-background" />
@@ -123,7 +127,7 @@ const ServicesSection = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button variant="outline" size="lg" className="gap-2">
+          <Button variant="outline" size="lg" className="gap-2" onClick={() => setIsModalOpen(true)}>
             <Settings className="w-4 h-4" />
             Manage My Links
           </Button>
@@ -132,6 +136,8 @@ const ServicesSection = () => {
           </Button>
         </div>
       </div>
+
+      <ManageLinksModal open={isModalOpen} onOpenChange={setIsModalOpen} />
     </section>
   );
 };
