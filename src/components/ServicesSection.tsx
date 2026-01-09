@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, type LucideIcon } from "lucide-react";
+import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, Award, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ManageLinksModal from "./ManageLinksModal";
@@ -143,8 +143,16 @@ const ServicesSection = () => {
             return (
               <div
                 key={index}
-                className="group relative p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
+                className="group relative p-8 pt-12 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
               >
+                {/* Recommended Badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-full shadow-lg">
+                  <Award className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
+                    Recommended by Expert Hires
+                  </span>
+                </div>
+                
                 {service.popular && (
                   <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
                     Popular
