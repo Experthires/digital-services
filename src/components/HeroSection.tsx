@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-
-const AFFILIATE_LINK = "https://go.fiverr.com/visit/?bta=YOUR_AFFILIATE_ID&brand=fiverrhybrid";
+import { getAffiliateLinks } from "./ManageLinksModal";
 
 const HeroSection = () => {
   return (
@@ -54,7 +53,7 @@ const HeroSection = () => {
               size="xl" 
               asChild
             >
-              <a href={AFFILIATE_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={getAffiliateLinks().mainLink || "#"} target="_blank" rel="noopener noreferrer">
                 Get Started on Fiverr
                 <ArrowRight className="w-5 h-5" />
               </a>
