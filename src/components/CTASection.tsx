@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-
-const AFFILIATE_LINK = "https://go.fiverr.com/visit/?bta=YOUR_AFFILIATE_ID&brand=fiverrhybrid";
+import { getAffiliateLinks } from "./ManageLinksModal";
 
 const CTASection = () => {
   return (
@@ -31,7 +30,7 @@ const CTASection = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="xl" asChild>
-              <a href={AFFILIATE_LINK} target="_blank" rel="noopener noreferrer">
+              <a href={getAffiliateLinks().mainLink || "#"} target="_blank" rel="noopener noreferrer">
                 Hire a Freelancer Today
                 <ArrowRight className="w-5 h-5" />
               </a>
