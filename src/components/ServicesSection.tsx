@@ -1,53 +1,72 @@
-import { useState } from "react";
-import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ManageLinksModal from "./ManageLinksModal";
+import ServiceLibraryModal, { type ServiceItem } from "./ServiceLibraryModal";
 
-const services = [
+// Icon mapping for localStorage persistence
+const iconMap: Record<string, LucideIcon> = {
+  Palette, Video, Globe, Sparkles, Share2, PenTool
+};
+
+interface StoredService {
+  iconName: string;
+  title: string;
+  description: string;
+  price: string;
+  popular: boolean;
+}
+
+const defaultServices: StoredService[] = [
   {
-    icon: Palette,
+    iconName: "Palette",
     title: "Logo & Branding",
     description: "Professional logos that make your brand unforgettable. From concept to final files.",
     price: "Starting at $5",
     popular: true,
   },
   {
-    icon: Video,
+    iconName: "Video",
     title: "Video Editing",
     description: "YouTube intros, social media clips, promotional videos edited by skilled professionals.",
     price: "Starting at $10",
     popular: false,
   },
   {
-    icon: Globe,
+    iconName: "Globe",
     title: "Web Development",
     description: "Custom websites, landing pages, and web apps built with modern technologies.",
     price: "Starting at $50",
     popular: true,
   },
   {
-    icon: Sparkles,
+    iconName: "Sparkles",
     title: "AI Services",
     description: "AI-powered content, chatbots, automation, and cutting-edge machine learning solutions.",
     price: "Starting at $15",
     popular: true,
   },
   {
-    icon: Share2,
+    iconName: "Share2",
     title: "Social Media",
     description: "Content creation, management, and growth strategies for all major platforms.",
     price: "Starting at $5",
     popular: false,
   },
   {
-    icon: PenTool,
+    iconName: "PenTool",
     title: "Copywriting",
     description: "Compelling sales copy, blog posts, email campaigns, and website content that converts.",
     price: "Starting at $10",
     popular: true,
   },
 ];
+
+const getStoredServices = (): StoredService[] => {
+  const saved = localStorage.getItem("customServices");
+  return saved ? JSON.parse(saved) : defaultServices;
+};
 
 const handleShare = async (serviceTitle: string) => {
   const shareData = {
@@ -70,6 +89,37 @@ const handleShare = async (serviceTitle: string) => {
 
 const ServicesSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [services, setServices] = useState<StoredService[]>(defaultServices);
+
+  useEffect(() => {
+    setServices(getStoredServices());
+  }, []);
+
+  const handleAddService = (service: ServiceItem) => {
+    const newService: StoredService = {
+      iconName: service.iconName,
+      title: service.title,
+      description: service.description,
+      price: service.price,
+      popular: service.popular,
+    };
+    
+    const updatedServices = [...services, newService];
+    setServices(updatedServices);
+    localStorage.setItem("customServices", JSON.stringify(updatedServices));
+  };
+
+  const handleRemoveService = (index: number) => {
+    const updatedServices = services.filter((_, i) => i !== index);
+    setServices(updatedServices);
+    localStorage.setItem("customServices", JSON.stringify(updatedServices));
+    toast.success("Service removed");
+  };
+
+  const getIcon = (iconName: string): LucideIcon => {
+    return iconMap[iconName] || Palette;
+  };
 
   return (
     <section id="services" className="py-20 md:py-32 relative">
@@ -88,56 +138,74 @@ const ServicesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="group relative p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
-            >
-              {service.popular && (
-                <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
-                  Popular
-                </span>
-              )}
-              
-              <button
-                onClick={() => handleShare(service.title)}
-                className="absolute top-4 left-4 p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors opacity-0 group-hover:opacity-100"
-                aria-label={`Share ${service.title}`}
+          {services.map((service, index) => {
+            const IconComponent = getIcon(service.iconName);
+            return (
+              <div
+                key={index}
+                className="group relative p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
               >
-                <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
-              </button>
-              
-              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                <service.icon className="w-7 h-7 text-primary" />
+                {service.popular && (
+                  <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
+                    Popular
+                  </span>
+                )}
+                
+                <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={() => handleShare(service.title)}
+                    className="p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors"
+                    aria-label={`Share ${service.title}`}
+                  >
+                    <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                  </button>
+                  <button
+                    onClick={() => handleRemoveService(index)}
+                    className="p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 transition-colors"
+                    aria-label={`Remove ${service.title}`}
+                  >
+                    <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                  </button>
+                </div>
+                
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
+                  <IconComponent className="w-7 h-7 text-primary" />
+                </div>
+                
+                <h3 className="font-display text-xl font-semibold mb-3">
+                  {service.title}
+                </h3>
+                
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {service.description}
+                </p>
+                
+                <p className="text-primary font-semibold">
+                  {service.price}
+                </p>
               </div>
-              
-              <h3 className="font-display text-xl font-semibold mb-3">
-                {service.title}
-              </h3>
-              
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                {service.description}
-              </p>
-              
-              <p className="text-primary font-semibold">
-                {service.price}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button variant="default" size="lg" className="gap-2" onClick={() => setIsLibraryOpen(true)}>
+            <Plus className="w-4 h-4" />
+            Add New Service
+          </Button>
           <Button variant="outline" size="lg" className="gap-2" onClick={() => setIsModalOpen(true)}>
             <Settings className="w-4 h-4" />
             Manage My Links
-          </Button>
-          <Button variant="outline" size="lg">
-            Explore All Categories
           </Button>
         </div>
       </div>
 
       <ManageLinksModal open={isModalOpen} onOpenChange={setIsModalOpen} />
+      <ServiceLibraryModal 
+        open={isLibraryOpen} 
+        onOpenChange={setIsLibraryOpen} 
+        onAddService={handleAddService}
+      />
     </section>
   );
 };
