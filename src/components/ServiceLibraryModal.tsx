@@ -359,9 +359,17 @@ const ServiceLibraryModal = ({ open, onOpenChange, onAddService }: ServiceLibrar
     toast.success(`${service.title} added to your services!`);
   };
 
+  const scrollToCategory = (categoryName: string) => {
+    setSelectedCategory(null);
+    setTimeout(() => {
+      const element = document.getElementById(`category-${categoryName.replace(/\s+/g, '-').toLowerCase()}`);
+      element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl max-h-[90vh] p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-5xl max-h-[90vh] p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4 border-b border-border">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <Layers className="w-5 h-5 text-primary" />
@@ -380,91 +388,109 @@ const ServiceLibraryModal = ({ open, onOpenChange, onAddService }: ServiceLibrar
               className="pl-10 bg-background"
             />
           </div>
-          
-          <div className="flex flex-wrap gap-2 mt-4">
-            <Button
-              variant={selectedCategory === null ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(null)}
-            >
-              All
-            </Button>
-            {serviceLibrary.map((category) => (
-              <Button
-                key={category.name}
-                variant={selectedCategory === category.name ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedCategory(category.name)}
-                className="gap-1"
-              >
-                <category.icon className="w-3 h-3" />
-                {category.name}
-              </Button>
-            ))}
-          </div>
         </DialogHeader>
 
-        <ScrollArea className="h-[50vh] p-6">
-          <div className="space-y-8">
-            {filteredLibrary.map((category) => (
-              <div key={category.name}>
-                <h3 className="flex items-center gap-2 font-semibold text-lg mb-4">
-                  <category.icon className="w-5 h-5 text-primary" />
-                  {category.name}
-                </h3>
+        <div className="flex h-[55vh]">
+          {/* Sticky Category Sidebar */}
+          <div className="w-56 shrink-0 border-r border-border bg-muted/30">
+            <ScrollArea className="h-full">
+              <div className="p-3 space-y-1">
+                <button
+                  onClick={() => setSelectedCategory(null)}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedCategory === null 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  <Layers className="w-4 h-4" />
+                  All Categories
+                </button>
                 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {category.services.map((service, index) => (
-                    <div
-                      key={index}
-                      className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-200"
-                    >
-                      {service.popular && (
-                        <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
-                          Popular
-                        </span>
-                      )}
-                      
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <service.icon className="w-5 h-5 text-primary" />
+                {serviceLibrary.map((category) => (
+                  <button
+                    key={category.name}
+                    onClick={() => scrollToCategory(category.name)}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                      selectedCategory === category.name 
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    <category.icon className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{category.name}</span>
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Main Content Area */}
+          <ScrollArea className="flex-1 p-6">
+            <div className="space-y-8">
+              {filteredLibrary.map((category) => (
+                <div 
+                  key={category.name} 
+                  id={`category-${category.name.replace(/\s+/g, '-').toLowerCase()}`}
+                >
+                  <h3 className="flex items-center gap-2 font-semibold text-lg mb-4 sticky top-0 bg-background py-2 z-10">
+                    <category.icon className="w-5 h-5 text-primary" />
+                    {category.name}
+                  </h3>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {category.services.map((service, index) => (
+                      <div
+                        key={index}
+                        className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-200"
+                      >
+                        {service.popular && (
+                          <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
+                            Popular
+                          </span>
+                        )}
+                        
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <service.icon className="w-5 h-5 text-primary" />
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-sm mb-1 truncate">
+                              {service.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                              {service.description}
+                            </p>
+                            <p className="text-xs text-primary font-medium">
+                              {service.price}
+                            </p>
+                          </div>
                         </div>
                         
-                        <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm mb-1 truncate">
-                            {service.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                            {service.description}
-                          </p>
-                          <p className="text-xs text-primary font-medium">
-                            {service.price}
-                          </p>
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="absolute bottom-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleAddService(service, category.name)}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
                       </div>
-                      
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="absolute bottom-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                        onClick={() => handleAddService(service, category.name)}
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
-            
-            {filteredLibrary.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground">
-                <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No services found matching your search.</p>
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+              ))}
+              
+              {filteredLibrary.length === 0 && (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                  <p>No services found matching your search.</p>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
