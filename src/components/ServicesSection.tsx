@@ -94,6 +94,13 @@ const ServicesSection = () => {
 
   useEffect(() => {
     setServices(getStoredServices());
+    
+    // Listen for updates from ManageLinksModal
+    const handleServicesUpdate = () => {
+      setServices(getStoredServices());
+    };
+    window.addEventListener('servicesUpdated', handleServicesUpdate);
+    return () => window.removeEventListener('servicesUpdated', handleServicesUpdate);
   }, []);
 
   const handleAddService = (service: ServiceItem) => {
