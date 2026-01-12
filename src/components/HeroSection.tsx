@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { getAffiliateLinks } from "./ManageLinksModal";
+import { getMainAffiliateLink } from "./ManageLinksModal";
 
 const HeroSection = () => {
   return (
@@ -39,7 +39,7 @@ const HeroSection = () => {
               size="xl" 
               asChild
             >
-              <a href={getAffiliateLinks().mainLink || "#"} target="_blank" rel="noopener noreferrer">
+              <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
                 Get Started on Fiverr
                 <ArrowRight className="w-5 h-5" />
               </a>
