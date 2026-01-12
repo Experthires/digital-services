@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, Award, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import ManageLinksModal from "./ManageLinksModal";
+import ManageLinksModal, { getMainAffiliateLink } from "./ManageLinksModal";
 import ServiceLibraryModal, { type ServiceItem } from "./ServiceLibraryModal";
 
 // Icon mapping for localStorage persistence
@@ -16,6 +16,7 @@ interface StoredService {
   description: string;
   price: string;
   popular: boolean;
+  affiliateLink?: string;
 }
 
 const defaultServices: StoredService[] = [
@@ -147,10 +148,14 @@ const ServicesSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {services.map((service, index) => {
             const IconComponent = getIcon(service.iconName);
+            const affiliateUrl = service.affiliateLink || getMainAffiliateLink() || "#";
             return (
-              <div
+              <a
                 key={index}
-                className="group relative p-8 pt-12 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow"
+                href={affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative p-8 pt-12 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow block"
               >
                 {/* Recommended Badge */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground rounded-full shadow-lg">
@@ -168,14 +173,22 @@ const ServicesSection = () => {
                 
                 <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button
-                    onClick={() => handleShare(service.title)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleShare(service.title);
+                    }}
                     className="p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors"
                     aria-label={`Share ${service.title}`}
                   >
                     <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
                   </button>
                   <button
-                    onClick={() => handleRemoveService(index)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRemoveService(index);
+                    }}
                     className="p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 transition-colors"
                     aria-label={`Remove ${service.title}`}
                   >
@@ -198,7 +211,7 @@ const ServicesSection = () => {
                 <p className="text-primary font-semibold">
                   {service.price}
                 </p>
-              </div>
+              </a>
             );
           })}
         </div>

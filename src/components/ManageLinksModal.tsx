@@ -20,22 +20,13 @@ interface ManageLinksModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-interface AffiliateLinks {
-  mainLink: string;
-  logoDesign: string;
-  videoEditing: string;
-  webDevelopment: string;
-  aiServices: string;
-  socialMedia: string;
-  copywriting: string;
-}
-
 interface StoredService {
   iconName: string;
   title: string;
   description: string;
   price: string;
   popular: boolean;
+  affiliateLink?: string;
 }
 
 // Icon mapping
@@ -43,60 +34,46 @@ const iconMap: Record<string, LucideIcon> = {
   Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush
 };
 
-const defaultLinks: AffiliateLinks = {
-  mainLink: "",
-  logoDesign: "",
-  videoEditing: "",
-  webDevelopment: "",
-  aiServices: "",
-  socialMedia: "",
-  copywriting: "",
-};
-
-const linkLabels: Record<keyof AffiliateLinks, string> = {
-  mainLink: "Main Affiliate Link",
-  logoDesign: "Logo & Branding",
-  videoEditing: "Video Editing",
-  webDevelopment: "Web Development",
-  aiServices: "AI Services",
-  socialMedia: "Social Media",
-  copywriting: "Copywriting",
-};
-
-export const getAffiliateLinks = (): AffiliateLinks => {
-  const saved = localStorage.getItem("affiliateLinks");
-  return saved ? JSON.parse(saved) : defaultLinks;
-};
-
 const getStoredServices = (): StoredService[] => {
   const saved = localStorage.getItem("customServices");
   return saved ? JSON.parse(saved) : [];
 };
 
+export const getMainAffiliateLink = (): string => {
+  return localStorage.getItem("mainAffiliateLink") || "";
+};
+
 const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
-  const [links, setLinks] = useState<AffiliateLinks>(defaultLinks);
+  const [mainLink, setMainLink] = useState("");
   const [services, setServices] = useState<StoredService[]>([]);
 
   useEffect(() => {
     if (open) {
-      setLinks(getAffiliateLinks());
+      setMainLink(getMainAffiliateLink());
       setServices(getStoredServices());
     }
   }, [open]);
 
-  const handleChange = (key: keyof AffiliateLinks, value: string) => {
-    setLinks((prev) => ({ ...prev, [key]: value }));
+  const handleServiceLinkChange = (index: number, value: string) => {
+    const updatedServices = [...services];
+    updatedServices[index] = { ...updatedServices[index], affiliateLink: value };
+    setServices(updatedServices);
   };
 
   const handleSave = () => {
-    localStorage.setItem("affiliateLinks", JSON.stringify(links));
-    toast.success("Affiliate links saved successfully!");
+    localStorage.setItem("mainAffiliateLink", mainLink);
+    localStorage.setItem("customServices", JSON.stringify(services));
+    window.dispatchEvent(new CustomEvent('servicesUpdated'));
+    toast.success("Links saved successfully!");
     onOpenChange(false);
   };
 
   const handleReset = () => {
-    setLinks(defaultLinks);
-    localStorage.removeItem("affiliateLinks");
+    setMainLink("");
+    const resetServices = services.map(s => ({ ...s, affiliateLink: "" }));
+    setServices(resetServices);
+    localStorage.removeItem("mainAffiliateLink");
+    localStorage.setItem("customServices", JSON.stringify(resetServices));
     toast.success("Links reset to default");
   };
 
@@ -104,7 +81,6 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
     const updatedServices = services.filter((_, i) => i !== index);
     setServices(updatedServices);
     localStorage.setItem("customServices", JSON.stringify(updatedServices));
-    // Dispatch event so ServicesSection can update
     window.dispatchEvent(new CustomEvent('servicesUpdated'));
     toast.success("Service removed");
   };
@@ -122,7 +98,7 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
             Manage My Links
           </DialogTitle>
           <DialogDescription>
-            Configure affiliate links and manage your added services.
+            Configure affiliate links for your services.
           </DialogDescription>
         </DialogHeader>
 
@@ -135,28 +111,60 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
           <TabsContent value="links" className="flex-1 overflow-hidden">
             <ScrollArea className="h-[40vh]">
               <div className="space-y-4 py-4 pr-4">
-                {(Object.keys(linkLabels) as Array<keyof AffiliateLinks>).map((key) => (
-                  <div key={key} className="space-y-2">
-                    <Label htmlFor={key} className="text-sm font-medium flex items-center gap-2">
-                      {key === "mainLink" && <ExternalLink className="w-4 h-4 text-primary" />}
-                      {linkLabels[key]}
-                      {key === "mainLink" && (
-                        <span className="text-xs text-muted-foreground">(Required)</span>
-                      )}
-                    </Label>
-                    <Input
-                      id={key}
-                      type="url"
-                      placeholder={key === "mainLink" 
-                        ? "https://go.fiverr.com/visit/?bta=YOUR_ID&brand=fiverrhybrid" 
-                        : "Leave blank to use main link"
-                      }
-                      value={links[key]}
-                      onChange={(e) => handleChange(key, e.target.value)}
-                      className="bg-background"
-                    />
+                {/* Main Affiliate Link */}
+                <div className="space-y-2">
+                  <Label htmlFor="mainLink" className="text-sm font-medium flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4 text-primary" />
+                    Main Affiliate Link
+                    <span className="text-xs text-muted-foreground">(Fallback for all services)</span>
+                  </Label>
+                  <Input
+                    id="mainLink"
+                    type="url"
+                    placeholder="https://go.fiverr.com/visit/?bta=YOUR_ID&brand=fiverrhybrid"
+                    value={mainLink}
+                    onChange={(e) => setMainLink(e.target.value)}
+                    className="bg-background"
+                  />
+                </div>
+
+                {/* Divider */}
+                {services.length > 0 && (
+                  <div className="border-t border-border pt-4 mt-4">
+                    <p className="text-sm font-medium text-muted-foreground mb-4">
+                      Service-Specific Links (optional)
+                    </p>
                   </div>
-                ))}
+                )}
+
+                {/* Service-specific links */}
+                {services.map((service, index) => {
+                  const IconComponent = getIcon(service.iconName);
+                  return (
+                    <div key={index} className="space-y-2">
+                      <Label htmlFor={`service-${index}`} className="text-sm font-medium flex items-center gap-2">
+                        <IconComponent className="w-4 h-4 text-primary" />
+                        {service.title}
+                      </Label>
+                      <Input
+                        id={`service-${index}`}
+                        type="url"
+                        placeholder="Leave blank to use main link"
+                        value={service.affiliateLink || ""}
+                        onChange={(e) => handleServiceLinkChange(index, e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                  );
+                })}
+
+                {services.length === 0 && (
+                  <div className="text-center py-8 text-muted-foreground border-t border-border mt-4">
+                    <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-sm">No services added yet.</p>
+                    <p className="text-xs mt-1">Add services from the Service Library to set individual links.</p>
+                  </div>
+                )}
               </div>
             </ScrollArea>
           </TabsContent>
@@ -183,7 +191,9 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="font-medium text-sm truncate">{service.title}</h4>
-                          <p className="text-xs text-muted-foreground truncate">{service.price}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {service.affiliateLink ? "Custom link set" : "Using main link"}
+                          </p>
                         </div>
                         <Button
                           size="sm"

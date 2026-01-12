@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { getAffiliateLinks } from "./ManageLinksModal";
+import { getMainAffiliateLink } from "./ManageLinksModal";
 
 const CTASection = () => {
   return (
@@ -30,7 +30,7 @@ const CTASection = () => {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="hero" size="xl" asChild>
-              <a href={getAffiliateLinks().mainLink || "#"} target="_blank" rel="noopener noreferrer">
+              <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
                 Hire a Freelancer Today
                 <ArrowRight className="w-5 h-5" />
               </a>
