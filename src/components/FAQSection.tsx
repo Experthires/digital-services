@@ -42,7 +42,7 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <section className="py-20 md:py-28 bg-background">
+    <section id="faq" className="py-20 md:py-28 bg-background">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-12 md:mb-16">
           <span className="text-primary font-semibold text-sm uppercase tracking-wider">
