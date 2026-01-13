@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import SocialProofBanner from "@/components/SocialProofBanner";
 import UrgencyBanner from "@/components/UrgencyBanner";
 import ValuePropositionBanner from "@/components/ValuePropositionBanner";
+import FloatingCTA from "@/components/FloatingCTA";
 
 const Index = () => {
   return (
@@ -49,6 +50,7 @@ const Index = () => {
       </Helmet>
 
       <main className="min-h-screen bg-background">
+        <FloatingCTA />
         <Navbar />
         <HeroSection />
         <SocialProofBanner />
