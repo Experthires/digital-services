@@ -8,6 +8,9 @@ import TrustSection from "@/components/TrustSection";
 import FAQSection from "@/components/FAQSection";
 import CTASection from "@/components/CTASection";
 import Footer from "@/components/Footer";
+import SocialProofBanner from "@/components/SocialProofBanner";
+import UrgencyBanner from "@/components/UrgencyBanner";
+import ValuePropositionBanner from "@/components/ValuePropositionBanner";
 
 const Index = () => {
   return (
@@ -48,10 +51,13 @@ const Index = () => {
       <main className="min-h-screen bg-background">
         <Navbar />
         <HeroSection />
+        <SocialProofBanner />
         <BenefitsSection />
         <HowItWorksSection />
+        <ValuePropositionBanner />
         <ServicesSection />
         <TrustSection />
+        <UrgencyBanner />
         <FAQSection />
         <CTASection />
         <Footer />
