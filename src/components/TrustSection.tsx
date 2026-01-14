@@ -1,27 +1,55 @@
 import { Star, Users, Globe, Award } from "lucide-react";
+import { useCountUp } from "@/hooks/useCountUp";
 
 const stats = [
   {
     icon: Users,
-    value: "4M+",
+    endValue: 4,
+    suffix: "M+",
     label: "Active Buyers",
   },
   {
     icon: Globe,
-    value: "160+",
+    endValue: 160,
+    suffix: "+",
     label: "Countries Served",
   },
   {
     icon: Star,
-    value: "50M+",
+    endValue: 50,
+    suffix: "M+",
     label: "5-Star Reviews",
   },
   {
     icon: Award,
-    value: "800K+",
+    endValue: 800,
+    suffix: "K+",
     label: "Expert Freelancers",
   },
 ];
+
+const StatCard = ({ icon: Icon, endValue, suffix, label }: {
+  icon: typeof Users;
+  endValue: number;
+  suffix: string;
+  label: string;
+}) => {
+  const { ref, formattedCount } = useCountUp({ end: endValue, suffix, duration: 2000 });
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+        <Icon className="w-6 h-6 text-primary" />
+      </div>
+      <div className="font-display text-3xl md:text-4xl font-bold text-gradient mb-2">
+        {formattedCount}
+      </div>
+      <div className="text-muted-foreground text-sm">
+        {label}
+      </div>
+    </div>
+  );
+};
 
 const testimonials = [
   {
@@ -51,17 +79,13 @@ const TrustSection = () => {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20">
           {stats.map((stat, index) => (
-            <div key={index} className="text-center">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <stat.icon className="w-6 h-6 text-primary" />
-              </div>
-              <div className="font-display text-3xl md:text-4xl font-bold text-gradient mb-2">
-                {stat.value}
-              </div>
-              <div className="text-muted-foreground text-sm">
-                {stat.label}
-              </div>
-            </div>
+            <StatCard
+              key={index}
+              icon={stat.icon}
+              endValue={stat.endValue}
+              suffix={stat.suffix}
+              label={stat.label}
+            />
           ))}
         </div>
 
