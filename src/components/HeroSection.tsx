@@ -4,15 +4,20 @@ import { getMainAffiliateLink } from "./ManageLinksModal";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero pt-20">
-      {/* Ambient glow effects */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse-slow" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+      {/* Multi-layer background */}
+      <div className="absolute inset-0 bg-gradient-hero" />
+      <div className="absolute inset-0 bg-gradient-mesh" />
+      
+      {/* Animated floating orbs */}
+      <div className="absolute top-1/4 left-1/6 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-1/3 right-1/6 w-96 h-96 bg-accent/15 rounded-full blur-3xl animate-float-delayed" />
+      <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-primary/10 rounded-full blur-2xl animate-pulse-slow" />
       
       <div className="container relative z-10 px-4 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
           {/* Badge */}
-          <div className="animate-fade-up inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border mb-8">
+          <div className="animate-fade-up inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/80 backdrop-blur-sm border border-primary/20 mb-8">
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-medium text-muted-foreground">
               Trusted by 4M+ businesses worldwide
@@ -22,7 +27,7 @@ const HeroSection = () => {
           {/* Main Headline */}
           <h1 className="animate-fade-up-delay-1 font-display text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
             Get Quality Work Done{" "}
-            <span className="text-gradient">10x Faster</span>{" "}
+            <span className="text-shimmer">10x Faster</span>{" "}
             Than Traditional Hiring
           </h1>
 
@@ -58,15 +63,15 @@ const HeroSection = () => {
           {/* Trust indicators */}
           <div className="animate-fade-up-delay-3 mt-12 flex flex-wrap items-center justify-center gap-8 text-muted-foreground">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-glow" />
+              <div className="w-2 h-2 rounded-full bg-primary shadow-glow" />
               <span className="text-sm">No upfront fees</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-glow" />
+              <div className="w-2 h-2 rounded-full bg-primary shadow-glow" />
               <span className="text-sm">Pay only when satisfied</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-primary animate-glow" />
+              <div className="w-2 h-2 rounded-full bg-primary shadow-glow" />
               <span className="text-sm">24/7 support</span>
             </div>
           </div>

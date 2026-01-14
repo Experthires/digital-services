@@ -4,6 +4,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const faqs = [
   {
@@ -42,34 +43,40 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <section id="faq" className="py-20 md:py-28 bg-background">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="text-center mb-12 md:mb-16">
-          <span className="text-primary font-semibold text-sm uppercase tracking-wider">
-            Got Questions?
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mt-3 mb-4">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            Everything you need to know before getting started with Fiverr
-          </p>
-        </div>
+    <section id="faq" className="py-20 md:py-28 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-mesh opacity-20" />
+      
+      <div className="container relative z-10 mx-auto px-4 max-w-4xl">
+        <ScrollReveal animation="fade-up">
+          <div className="text-center mb-12 md:mb-16">
+            <span className="text-primary font-semibold text-sm uppercase tracking-wider">
+              Got Questions?
+            </span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mt-3 mb-4">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Everything you need to know before getting started with Fiverr
+            </p>
+          </div>
+        </ScrollReveal>
 
         <Accordion type="single" collapsible className="w-full space-y-4">
           {faqs.map((faq, index) => (
-            <AccordionItem 
-              key={index} 
-              value={`item-${index}`}
-              className="bg-card border border-border/50 rounded-xl px-6 data-[state=open]:border-primary/30 transition-colors"
-            >
-              <AccordionTrigger className="text-left text-foreground hover:text-primary hover:no-underline py-5 text-base md:text-lg font-medium">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground text-base pb-5 leading-relaxed">
-                {faq.answer}
-              </AccordionContent>
-            </AccordionItem>
+            <ScrollReveal key={index} animation="fade-up" delay={index * 50}>
+              <AccordionItem 
+                value={`item-${index}`}
+                className="bg-gradient-card border border-border/50 rounded-xl px-6 data-[state=open]:border-primary/30 transition-colors"
+              >
+                <AccordionTrigger className="text-left text-foreground hover:text-primary hover:no-underline py-5 text-base md:text-lg font-medium">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-base pb-5 leading-relaxed">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            </ScrollReveal>
           ))}
         </Accordion>
       </div>
