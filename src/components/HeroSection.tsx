@@ -1,6 +1,41 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { getMainAffiliateLink } from "./ManageLinksModal";
+import { useMemo } from "react";
+
+const StarField = () => {
+  const stars = useMemo(() => {
+    return Array.from({ length: 80 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      size: Math.random() * 2 + 1,
+      duration: Math.random() * 3 + 2,
+      delay: Math.random() * 4,
+      opacity: Math.random() * 0.5 + 0.3,
+    }));
+  }, []);
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {stars.map((star) => (
+        <div
+          key={star.id}
+          className="absolute rounded-full bg-white animate-twinkle"
+          style={{
+            left: star.left,
+            top: star.top,
+            width: `${star.size}px`,
+            height: `${star.size}px`,
+            animationDuration: `${star.duration}s`,
+            animationDelay: `${star.delay}s`,
+            opacity: star.opacity,
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const HeroSection = () => {
   return (
@@ -8,6 +43,9 @@ const HeroSection = () => {
       {/* Multi-layer background */}
       <div className="absolute inset-0 bg-gradient-hero" />
       <div className="absolute inset-0 bg-gradient-mesh" />
+      
+      {/* Star field particles */}
+      <StarField />
       
       {/* Animated floating orbs */}
       <div className="absolute top-1/4 left-1/6 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />

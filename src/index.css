@@ -213,6 +213,12 @@
     -webkit-text-fill-color: transparent;
     animation: shimmer 3s linear infinite;
   }
+
+  /* Star twinkle animation */
+  .animate-twinkle {
+    animation: twinkle 3s ease-in-out infinite;
+    box-shadow: 0 0 4px hsl(var(--primary) / 0.5);
+  }
 }
 
 @keyframes fadeUp {
@@ -250,5 +256,16 @@
   }
   100% {
     background-position: 200% center;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
   }
 }
