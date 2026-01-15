@@ -3,9 +3,11 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import { getMainAffiliateLink } from "./ManageLinksModal";
 import { useMemo } from "react";
 
+// Optimized StarField with fewer DOM elements and CSS-based animation
 const StarField = () => {
   const stars = useMemo(() => {
-    return Array.from({ length: 80 }, (_, i) => ({
+    // Reduced to 40 stars for better performance
+    return Array.from({ length: 40 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       top: `${Math.random() * 100}%`,
@@ -17,18 +19,17 @@ const StarField = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {stars.map((star) => (
         <div
           key={star.id}
-          className="absolute rounded-full bg-white animate-twinkle"
+          className="absolute rounded-full bg-white will-change-transform"
           style={{
             left: star.left,
             top: star.top,
             width: `${star.size}px`,
             height: `${star.size}px`,
-            animationDuration: `${star.duration}s`,
-            animationDelay: `${star.delay}s`,
+            animation: `twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
             opacity: star.opacity,
           }}
         />
