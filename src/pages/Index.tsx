@@ -1,17 +1,21 @@
 import { Helmet } from "react-helmet-async";
+import { lazy, Suspense } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
-import BenefitsSection from "@/components/BenefitsSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import ServicesSection from "@/components/ServicesSection";
-import TrustSection from "@/components/TrustSection";
-import FAQSection from "@/components/FAQSection";
-import CTASection from "@/components/CTASection";
-import Footer from "@/components/Footer";
-import SocialProofBanner from "@/components/SocialProofBanner";
-import UrgencyBanner from "@/components/UrgencyBanner";
-import ValuePropositionBanner from "@/components/ValuePropositionBanner";
-import FloatingCTA from "@/components/FloatingCTA";
+import SectionSkeleton from "@/components/LazySection";
+
+// Lazy load below-the-fold sections for faster initial paint
+const BenefitsSection = lazy(() => import("@/components/BenefitsSection"));
+const HowItWorksSection = lazy(() => import("@/components/HowItWorksSection"));
+const ServicesSection = lazy(() => import("@/components/ServicesSection"));
+const TrustSection = lazy(() => import("@/components/TrustSection"));
+const FAQSection = lazy(() => import("@/components/FAQSection"));
+const CTASection = lazy(() => import("@/components/CTASection"));
+const Footer = lazy(() => import("@/components/Footer"));
+const SocialProofBanner = lazy(() => import("@/components/SocialProofBanner"));
+const UrgencyBanner = lazy(() => import("@/components/UrgencyBanner"));
+const ValuePropositionBanner = lazy(() => import("@/components/ValuePropositionBanner"));
+const FloatingCTA = lazy(() => import("@/components/FloatingCTA"));
 
 const Index = () => {
   return (
@@ -24,6 +28,10 @@ const Index = () => {
         />
         <meta name="keywords" content="freelancers, fiverr, logo design, web development, video editing, AI services, hire freelancers, affordable freelance" />
         <link rel="canonical" href="https://yourdomain.com" />
+        
+        {/* Preload critical resources */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* Open Graph */}
         <meta property="og:title" content="Hire Expert Freelancers Fast | Quality Work Starting at $5" />
@@ -50,19 +58,24 @@ const Index = () => {
       </Helmet>
 
       <main className="min-h-screen bg-background">
-        <FloatingCTA />
+        <Suspense fallback={null}>
+          <FloatingCTA />
+        </Suspense>
         <Navbar />
         <HeroSection />
-        <SocialProofBanner />
-        <BenefitsSection />
-        <HowItWorksSection />
-        <ValuePropositionBanner />
-        <ServicesSection />
-        <TrustSection />
-        <UrgencyBanner />
-        <FAQSection />
-        <CTASection />
-        <Footer />
+        
+        <Suspense fallback={<SectionSkeleton />}>
+          <SocialProofBanner />
+          <BenefitsSection />
+          <HowItWorksSection />
+          <ValuePropositionBanner />
+          <ServicesSection />
+          <TrustSection />
+          <UrgencyBanner />
+          <FAQSection />
+          <CTASection />
+          <Footer />
+        </Suspense>
       </main>
     </>
   );
