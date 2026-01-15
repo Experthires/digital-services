@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ManageLinksModal, { getMainAffiliateLink } from "./ManageLinksModal";
 import ServiceLibraryModal, { type ServiceItem } from "./ServiceLibraryModal";
-import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 // Icon mapping for localStorage persistence
 const iconMap: Record<string, LucideIcon> = {
@@ -141,103 +140,98 @@ const ServicesSection = () => {
       <div className="absolute -left-32 bottom-1/4 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
       
       <div className="container relative z-10 px-4">
-        <ScrollReveal animation="fade-up">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
-              Services That{" "}
-              <span className="text-gradient">Scale Your Business</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Whatever you need to grow, there's a freelancer ready to deliver. 
-              Explore the most in-demand services.
-            </p>
-          </div>
-        </ScrollReveal>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
+            Services That{" "}
+            <span className="text-gradient">Scale Your Business</span>
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Whatever you need to grow, there's a freelancer ready to deliver. 
+            Explore the most in-demand services.
+          </p>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {services.map((service, index) => {
             const IconComponent = getIcon(service.iconName);
             const affiliateUrl = service.affiliateLink || getMainAffiliateLink() || "#";
             return (
-              <ScrollReveal key={index} animation="fade-up" delay={index * 80}>
-                <a
-                  href={affiliateUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative p-8 pt-12 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow block h-full"
-                >
-                  {/* Recommended Badge */}
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full shadow-lg">
-                    <Award className="w-3.5 h-3.5" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
-                      Recommended by Expert Hires
-                    </span>
-                  </div>
-                  
-                  {service.popular && (
-                    <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
-                      Popular
-                    </span>
-                  )}
-                  
-                  <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleShare(service.title);
-                      }}
-                      className="p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors"
-                      aria-label={`Share ${service.title}`}
-                    >
-                      <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        handleRemoveService(index);
-                      }}
-                      className="p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 transition-colors"
-                      aria-label={`Remove ${service.title}`}
-                    >
-                      <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
-                    </button>
-                  </div>
-                  
-                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:shadow-glow transition-all">
-                    <IconComponent className="w-7 h-7 text-primary" />
-                  </div>
-                  
-                  <h3 className="font-display text-xl font-semibold mb-3">
-                    {service.title}
-                  </h3>
-                  
-                  <p className="text-muted-foreground leading-relaxed mb-4">
-                    {service.description}
-                  </p>
-                  
-                  <p className="text-primary font-semibold">
-                    {service.price}
-                  </p>
-                </a>
-              </ScrollReveal>
+              <a
+                key={index}
+                href={affiliateUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative p-8 pt-12 rounded-2xl bg-gradient-card border border-border hover:border-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-glow block h-full"
+              >
+                {/* Recommended Badge */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-full shadow-lg">
+                  <Award className="w-3.5 h-3.5" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">
+                    Recommended by Expert Hires
+                  </span>
+                </div>
+                
+                {service.popular && (
+                  <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
+                    Popular
+                  </span>
+                )}
+                
+                <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleShare(service.title);
+                    }}
+                    className="p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors"
+                    aria-label={`Share ${service.title}`}
+                  >
+                    <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handleRemoveService(index);
+                    }}
+                    className="p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 transition-colors"
+                    aria-label={`Remove ${service.title}`}
+                  >
+                    <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                  </button>
+                </div>
+                
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:shadow-glow transition-all">
+                  <IconComponent className="w-7 h-7 text-primary" />
+                </div>
+                
+                <h3 className="font-display text-xl font-semibold mb-3">
+                  {service.title}
+                </h3>
+                
+                <p className="text-muted-foreground leading-relaxed mb-4">
+                  {service.description}
+                </p>
+                
+                <p className="text-primary font-semibold">
+                  {service.price}
+                </p>
+              </a>
             );
           })}
         </div>
 
-        <ScrollReveal animation="fade-up" delay={400}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button variant="default" size="lg" className="gap-2" onClick={() => setIsLibraryOpen(true)}>
-              <Plus className="w-4 h-4" />
-              Add New Service
-            </Button>
-            <Button variant="outline" size="lg" className="gap-2" onClick={() => setIsModalOpen(true)}>
-              <Settings className="w-4 h-4" />
-              Manage My Links
-            </Button>
-          </div>
-        </ScrollReveal>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button variant="default" size="lg" className="gap-2" onClick={() => setIsLibraryOpen(true)}>
+            <Plus className="w-4 h-4" />
+            Add New Service
+          </Button>
+          <Button variant="outline" size="lg" className="gap-2" onClick={() => setIsModalOpen(true)}>
+            <Settings className="w-4 h-4" />
+            Manage My Links
+          </Button>
+        </div>
       </div>
 
       <ManageLinksModal open={isModalOpen} onOpenChange={setIsModalOpen} />

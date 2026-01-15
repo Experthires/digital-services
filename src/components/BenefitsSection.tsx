@@ -1,5 +1,4 @@
 import { Clock, DollarSign, Shield, Zap, Users, Award } from "lucide-react";
-import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const benefits = [
   {
@@ -45,38 +44,33 @@ const BenefitsSection = () => {
       <div className="absolute -left-32 top-1/2 w-64 h-64 bg-accent/10 rounded-full blur-3xl" />
       
       <div className="container relative z-10 px-4">
-        <ScrollReveal animation="fade-up">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
-              Why Smart Businesses Choose{" "}
-              <span className="text-gradient">Freelance Talent</span>
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Traditional hiring is slow, expensive, and risky. Here's why 
-              forward-thinking companies are switching to on-demand expertise.
-            </p>
-          </div>
-        </ScrollReveal>
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="font-display text-3xl md:text-5xl font-bold mb-6">
+            Why Smart Businesses Choose{" "}
+            <span className="text-gradient">Freelance Talent</span>
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Traditional hiring is slow, expensive, and risky. Here's why 
+            forward-thinking companies are switching to on-demand expertise.
+          </p>
+        </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {benefits.map((benefit, index) => (
-            <ScrollReveal 
-              key={index} 
-              animation="fade-up" 
-              delay={index * 100}
+            <div 
+              key={index}
+              className="group p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 h-full"
             >
-              <div className="group p-8 rounded-2xl bg-gradient-card border border-border hover:border-primary/30 transition-all duration-300 hover:-translate-y-1 h-full">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:shadow-glow transition-all">
-                  <benefit.icon className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-display text-xl font-semibold mb-3">
-                  {benefit.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {benefit.description}
-                </p>
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:shadow-glow transition-all">
+                <benefit.icon className="w-6 h-6 text-primary" />
               </div>
-            </ScrollReveal>
+              <h3 className="font-display text-xl font-semibold mb-3">
+                {benefit.title}
+              </h3>
+              <p className="text-muted-foreground leading-relaxed">
+                {benefit.description}
+              </p>
+            </div>
           ))}
         </div>
       </div>

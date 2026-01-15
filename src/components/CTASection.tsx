@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { getMainAffiliateLink } from "./ManageLinksModal";
-import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const CTASection = () => {
   return (
@@ -14,45 +13,35 @@ const CTASection = () => {
       
       <div className="container relative z-10 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <ScrollReveal animation="scale">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-sm">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">
-                Limited Time: New users get 10% off first order
-              </span>
-            </div>
-          </ScrollReveal>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 backdrop-blur-sm">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-primary">
+              Limited Time: New users get 10% off first order
+            </span>
+          </div>
 
-          <ScrollReveal animation="fade-up" delay={100}>
-            <h2 className="font-display text-4xl md:text-6xl font-bold mb-6">
-              Ready to Grow Your{" "}
-              <span className="text-shimmer">Business?</span>
-            </h2>
-          </ScrollReveal>
+          <h2 className="font-display text-4xl md:text-6xl font-bold mb-6">
+            Ready to Grow Your{" "}
+            <span className="text-shimmer">Business?</span>
+          </h2>
 
-          <ScrollReveal animation="fade-up" delay={200}>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              Stop wasting time and money on outdated hiring methods. 
-              Join millions of businesses getting work done smarter.
-            </p>
-          </ScrollReveal>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+            Stop wasting time and money on outdated hiring methods. 
+            Join millions of businesses getting work done smarter.
+          </p>
 
-          <ScrollReveal animation="fade-up" delay={300}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="hero" size="xl" asChild>
-                <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
-                  Hire a Freelancer Today
-                  <ArrowRight className="w-5 h-5" />
-                </a>
-              </Button>
-            </div>
-          </ScrollReveal>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button variant="hero" size="xl" asChild>
+              <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
+                Hire a Freelancer Today
+                <ArrowRight className="w-5 h-5" />
+              </a>
+            </Button>
+          </div>
 
-          <ScrollReveal animation="fade-up" delay={400}>
-            <p className="mt-6 text-sm text-muted-foreground">
-              Free to sign up • No credit card required • Cancel anytime
-            </p>
-          </ScrollReveal>
+          <p className="mt-6 text-sm text-muted-foreground">
+            Free to sign up • No credit card required • Cancel anytime
+          </p>
         </div>
       </div>
     </section>
