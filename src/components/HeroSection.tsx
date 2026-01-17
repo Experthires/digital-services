@@ -1,42 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { getMainAffiliateLink } from "./ManageLinksModal";
-import { useMemo } from "react";
-
-// Optimized StarField with fewer DOM elements and CSS-based animation
-const StarField = () => {
-  const stars = useMemo(() => {
-    // Reduced to 40 stars for better performance
-    return Array.from({ length: 40 }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      size: Math.random() * 2 + 1,
-      duration: Math.random() * 3 + 2,
-      delay: Math.random() * 4,
-      opacity: Math.random() * 0.5 + 0.3,
-    }));
-  }, []);
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-      {stars.map((star) => (
-        <div
-          key={star.id}
-          className="absolute rounded-full bg-white will-change-transform"
-          style={{
-            left: star.left,
-            top: star.top,
-            width: `${star.size}px`,
-            height: `${star.size}px`,
-            animation: `twinkle ${star.duration}s ease-in-out ${star.delay}s infinite`,
-            opacity: star.opacity,
-          }}
-        />
-      ))}
-    </div>
-  );
-};
 
 const HeroSection = () => {
   return (
@@ -45,13 +9,9 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-gradient-hero" />
       <div className="absolute inset-0 bg-gradient-mesh" />
       
-      {/* Star field particles */}
-      <StarField />
-      
-      {/* Animated floating orbs */}
+      {/* Animated floating orbs - reduced for performance */}
       <div className="absolute top-1/4 left-1/6 w-72 h-72 bg-primary/20 rounded-full blur-3xl animate-float" />
       <div className="absolute bottom-1/3 right-1/6 w-96 h-96 bg-accent/15 rounded-full blur-3xl animate-float-delayed" />
-      <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-primary/10 rounded-full blur-2xl animate-pulse-slow" />
       
       <div className="container relative z-10 px-4 py-20 md:py-32">
         <div className="max-w-4xl mx-auto text-center">
