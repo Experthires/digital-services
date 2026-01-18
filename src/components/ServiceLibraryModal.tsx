@@ -8,6 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { 
   Search, 
@@ -39,9 +43,52 @@ import {
   Layers,
   Box,
   Paintbrush,
+  Wrench,
+  Zap,
+  Star,
+  Rocket,
+  Target,
+  Award,
   type LucideIcon
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+// Icon options for custom services
+const iconOptions: { name: string; icon: LucideIcon }[] = [
+  { name: "Palette", icon: Palette },
+  { name: "Video", icon: Video },
+  { name: "Globe", icon: Globe },
+  { name: "Sparkles", icon: Sparkles },
+  { name: "Share2", icon: Share2 },
+  { name: "PenTool", icon: PenTool },
+  { name: "Music", icon: Music },
+  { name: "Camera", icon: Camera },
+  { name: "Mic", icon: Mic },
+  { name: "FileText", icon: FileText },
+  { name: "Code", icon: Code },
+  { name: "Smartphone", icon: Smartphone },
+  { name: "TrendingUp", icon: TrendingUp },
+  { name: "BarChart", icon: BarChart },
+  { name: "Mail", icon: Mail },
+  { name: "BookOpen", icon: BookOpen },
+  { name: "Gamepad2", icon: Gamepad2 },
+  { name: "Building", icon: Building },
+  { name: "Users", icon: Users },
+  { name: "Heart", icon: Heart },
+  { name: "ShoppingCart", icon: ShoppingCart },
+  { name: "Briefcase", icon: Briefcase },
+  { name: "Megaphone", icon: Megaphone },
+  { name: "Film", icon: Film },
+  { name: "Layers", icon: Layers },
+  { name: "Box", icon: Box },
+  { name: "Paintbrush", icon: Paintbrush },
+  { name: "Wrench", icon: Wrench },
+  { name: "Zap", icon: Zap },
+  { name: "Star", icon: Star },
+  { name: "Rocket", icon: Rocket },
+  { name: "Target", icon: Target },
+  { name: "Award", icon: Award },
+];
 
 interface ServiceLibraryModalProps {
   open: boolean;
@@ -419,6 +466,19 @@ const serviceLibrary: ServiceCategory[] = [
 const ServiceLibraryModal = ({ open, onOpenChange, onAddService }: ServiceLibraryModalProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("library");
+  
+  // Custom service form state
+  const [customTitle, setCustomTitle] = useState("");
+  const [customDescription, setCustomDescription] = useState("");
+  const [customPrice, setCustomPrice] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
+  const [customCategoryInput, setCustomCategoryInput] = useState("");
+  const [isNewCategory, setIsNewCategory] = useState(false);
+  const [selectedIcon, setSelectedIcon] = useState("Sparkles");
+  const [isPopular, setIsPopular] = useState(false);
+
+  const existingCategories = serviceLibrary.map(cat => cat.name);
 
   const filteredLibrary = serviceLibrary.map(category => ({
     ...category,
@@ -434,6 +494,53 @@ const ServiceLibraryModal = ({ open, onOpenChange, onAddService }: ServiceLibrar
   const handleAddService = (service: Omit<ServiceItem, 'category'>, categoryName: string) => {
     onAddService({ ...service, category: categoryName });
     toast.success(`${service.title} added to your services!`);
+  };
+
+  const handleAddCustomService = () => {
+    if (!customTitle.trim()) {
+      toast.error("Please enter a service title");
+      return;
+    }
+    if (!customDescription.trim()) {
+      toast.error("Please enter a description");
+      return;
+    }
+    if (!customPrice.trim()) {
+      toast.error("Please enter a price");
+      return;
+    }
+    
+    const finalCategory = isNewCategory ? customCategoryInput.trim() : customCategory;
+    if (!finalCategory) {
+      toast.error("Please select or enter a category");
+      return;
+    }
+
+    const selectedIconData = iconOptions.find(opt => opt.name === selectedIcon) || iconOptions[0];
+    
+    const newService: ServiceItem = {
+      icon: selectedIconData.icon,
+      iconName: selectedIcon,
+      title: customTitle.trim(),
+      description: customDescription.trim(),
+      price: customPrice.trim().startsWith("Starting at") ? customPrice.trim() : `Starting at ${customPrice.trim()}`,
+      popular: isPopular,
+      category: finalCategory,
+    };
+
+    onAddService(newService);
+    toast.success(`${newService.title} added to your services!`);
+    
+    // Reset form
+    setCustomTitle("");
+    setCustomDescription("");
+    setCustomPrice("");
+    setCustomCategory("");
+    setCustomCategoryInput("");
+    setIsNewCategory(false);
+    setSelectedIcon("Sparkles");
+    setIsPopular(false);
+    setActiveTab("library");
   };
 
   const scrollToCategory = (categoryName: string) => {
@@ -453,125 +560,299 @@ const ServiceLibraryModal = ({ open, onOpenChange, onAddService }: ServiceLibrar
             Service Library
           </DialogTitle>
           <DialogDescription>
-            Browse all Fiverr categories and add services to your landing page.
+            Browse existing services or create your own custom service.
           </DialogDescription>
-          
-          <div className="relative mt-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              placeholder="Search services..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-background"
-            />
-          </div>
         </DialogHeader>
 
-        <div className="flex h-[55vh]">
-          {/* Sticky Category Sidebar */}
-          <div className="w-56 shrink-0 border-r border-border bg-muted/30">
-            <ScrollArea className="h-full">
-              <div className="p-3 space-y-1">
-                <button
-                  onClick={() => setSelectedCategory(null)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedCategory === null 
-                      ? 'bg-primary text-primary-foreground' 
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <Layers className="w-4 h-4" />
-                  All Categories
-                </button>
-                
-                {serviceLibrary.map((category) => (
-                  <button
-                    key={category.name}
-                    onClick={() => scrollToCategory(category.name)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
-                      selectedCategory === category.name 
-                        ? 'bg-primary text-primary-foreground' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                    }`}
-                  >
-                    <category.icon className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{category.name}</span>
-                  </button>
-                ))}
-              </div>
-            </ScrollArea>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
+          <div className="px-6 border-b border-border">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="library">Browse Library</TabsTrigger>
+              <TabsTrigger value="custom">Create Custom</TabsTrigger>
+            </TabsList>
           </div>
 
-          {/* Main Content Area */}
-          <ScrollArea className="flex-1 p-6">
-            <div className="space-y-8">
-              {filteredLibrary.map((category) => (
-                <div 
-                  key={category.name} 
-                  id={`category-${category.name.replace(/\s+/g, '-').toLowerCase()}`}
-                >
-                  <h3 className="flex items-center gap-2 font-semibold text-lg mb-4 sticky top-0 bg-background py-2 z-10">
-                    <category.icon className="w-5 h-5 text-primary" />
-                    {category.name}
-                  </h3>
-                  
-                  <div className="grid md:grid-cols-2 gap-4">
-                    {category.services.map((service, index) => (
-                      <div
-                        key={index}
-                        className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-200"
+          <TabsContent value="library" className="m-0">
+            <div className="px-6 py-4 border-b border-border">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search services..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 bg-background"
+                />
+              </div>
+            </div>
+
+            <div className="flex h-[50vh]">
+              {/* Sticky Category Sidebar */}
+              <div className="w-56 shrink-0 border-r border-border bg-muted/30">
+                <ScrollArea className="h-full">
+                  <div className="p-3 space-y-1">
+                    <button
+                      onClick={() => setSelectedCategory(null)}
+                      className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                        selectedCategory === null 
+                          ? 'bg-primary text-primary-foreground' 
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <Layers className="w-4 h-4" />
+                      All Categories
+                    </button>
+                    
+                    {serviceLibrary.map((category) => (
+                      <button
+                        key={category.name}
+                        onClick={() => scrollToCategory(category.name)}
+                        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
+                          selectedCategory === category.name 
+                            ? 'bg-primary text-primary-foreground' 
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                        }`}
                       >
-                        {service.popular && (
-                          <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
-                            Popular
-                          </span>
-                        )}
-                        
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                            <service.icon className="w-5 h-5 text-primary" />
+                        <category.icon className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{category.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+
+              {/* Main Content Area */}
+              <ScrollArea className="flex-1 p-6">
+                <div className="space-y-8">
+                  {filteredLibrary.map((category) => (
+                    <div 
+                      key={category.name} 
+                      id={`category-${category.name.replace(/\s+/g, '-').toLowerCase()}`}
+                    >
+                      <h3 className="flex items-center gap-2 font-semibold text-lg mb-4 sticky top-0 bg-background py-2 z-10">
+                        <category.icon className="w-5 h-5 text-primary" />
+                        {category.name}
+                      </h3>
+                      
+                      <div className="grid md:grid-cols-2 gap-4">
+                        {category.services.map((service, index) => (
+                          <div
+                            key={index}
+                            className="group relative p-4 rounded-xl bg-card border border-border hover:border-primary/50 transition-all duration-200"
+                          >
+                            {service.popular && (
+                              <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
+                                Popular
+                              </span>
+                            )}
+                            
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                <service.icon className="w-5 h-5 text-primary" />
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-sm mb-1 truncate">
+                                  {service.title}
+                                </h4>
+                                <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                                  {service.description}
+                                </p>
+                                <p className="text-xs text-primary font-medium">
+                                  {service.price}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="absolute bottom-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => handleAddService(service, category.name)}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
                           </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm mb-1 truncate">
-                              {service.title}
-                            </h4>
-                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
-                              {service.description}
-                            </p>
-                            <p className="text-xs text-primary font-medium">
-                              {service.price}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="absolute bottom-2 right-2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleAddService(service, category.name)}
-                        >
-                          <Plus className="w-4 h-4" />
-                        </Button>
+                        ))}
                       </div>
+                    </div>
+                  ))}
+                  
+                  {filteredLibrary.length === 0 && (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p>No services found matching your search.</p>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="custom" className="m-0">
+            <ScrollArea className="h-[55vh]">
+              <div className="p-6 space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {/* Service Title */}
+                  <div className="space-y-2">
+                    <Label htmlFor="customTitle">Service Title *</Label>
+                    <Input
+                      id="customTitle"
+                      placeholder="e.g., Custom Logo Design"
+                      value={customTitle}
+                      onChange={(e) => setCustomTitle(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Price */}
+                  <div className="space-y-2">
+                    <Label htmlFor="customPrice">Price *</Label>
+                    <Input
+                      id="customPrice"
+                      placeholder="e.g., $25 or Starting at $25"
+                      value={customPrice}
+                      onChange={(e) => setCustomPrice(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="customDescription">Description *</Label>
+                  <Textarea
+                    id="customDescription"
+                    placeholder="Describe your service..."
+                    value={customDescription}
+                    onChange={(e) => setCustomDescription(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+
+                {/* Category Selection */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label>Category *</Label>
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor="newCategory" className="text-sm text-muted-foreground">Create new</Label>
+                      <Switch
+                        id="newCategory"
+                        checked={isNewCategory}
+                        onCheckedChange={setIsNewCategory}
+                      />
+                    </div>
+                  </div>
+                  
+                  {isNewCategory ? (
+                    <Input
+                      placeholder="Enter new category name..."
+                      value={customCategoryInput}
+                      onChange={(e) => setCustomCategoryInput(e.target.value)}
+                    />
+                  ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                      {existingCategories.map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setCustomCategory(cat)}
+                          className={`px-3 py-2 text-sm rounded-lg border transition-colors text-left truncate ${
+                            customCategory === cat
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-card border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Icon Selection */}
+                <div className="space-y-3">
+                  <Label>Select Icon</Label>
+                  <div className="grid grid-cols-6 md:grid-cols-11 gap-2">
+                    {iconOptions.map((option) => (
+                      <button
+                        key={option.name}
+                        type="button"
+                        onClick={() => setSelectedIcon(option.name)}
+                        className={`p-3 rounded-lg border transition-all ${
+                          selectedIcon === option.name
+                            ? 'bg-primary text-primary-foreground border-primary scale-110'
+                            : 'bg-card border-border hover:border-primary/50'
+                        }`}
+                      >
+                        <option.icon className="w-5 h-5 mx-auto" />
+                      </button>
                     ))}
                   </div>
                 </div>
-              ))}
-              
-              {filteredLibrary.length === 0 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <Search className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No services found matching your search.</p>
+
+                {/* Popular Toggle */}
+                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50 border border-border">
+                  <div>
+                    <Label htmlFor="popular" className="font-medium">Mark as Popular</Label>
+                    <p className="text-sm text-muted-foreground">Display a "Popular" badge on this service</p>
+                  </div>
+                  <Switch
+                    id="popular"
+                    checked={isPopular}
+                    onCheckedChange={setIsPopular}
+                  />
                 </div>
-              )}
-            </div>
-          </ScrollArea>
-        </div>
+
+                {/* Preview Card */}
+                {customTitle && (
+                  <div className="space-y-3">
+                    <Label>Preview</Label>
+                    <div className="relative p-4 rounded-xl bg-card border border-border max-w-md">
+                      {isPopular && (
+                        <span className="absolute top-2 right-2 px-2 py-0.5 text-xs font-medium bg-primary/20 text-primary rounded-full">
+                          Popular
+                        </span>
+                      )}
+                      
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          {(() => {
+                            const IconComponent = iconOptions.find(opt => opt.name === selectedIcon)?.icon || Sparkles;
+                            return <IconComponent className="w-5 h-5 text-primary" />;
+                          })()}
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm mb-1">
+                            {customTitle || "Service Title"}
+                          </h4>
+                          <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                            {customDescription || "Service description..."}
+                          </p>
+                          <p className="text-xs text-primary font-medium">
+                            {customPrice ? (customPrice.startsWith("Starting at") ? customPrice : `Starting at ${customPrice}`) : "Starting at $X"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <Button 
+                  onClick={handleAddCustomService} 
+                  className="w-full"
+                  size="lg"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Custom Service
+                </Button>
+              </div>
+            </ScrollArea>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );
 };
 
 export default ServiceLibraryModal;
-export { serviceLibrary };
+export { serviceLibrary, iconOptions };
