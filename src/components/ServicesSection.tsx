@@ -1,13 +1,22 @@
 import { useState, useEffect } from "react";
-import { Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, Award, type LucideIcon } from "lucide-react";
+import { 
+  Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, Award,
+  Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen,
+  Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush,
+  Wrench, Zap, Star, Rocket, Target,
+  type LucideIcon 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import ManageLinksModal, { getMainAffiliateLink } from "./ManageLinksModal";
 import ServiceLibraryModal, { type ServiceItem } from "./ServiceLibraryModal";
 
-// Icon mapping for localStorage persistence
+// Icon mapping for localStorage persistence - includes all icons from ServiceLibraryModal
 const iconMap: Record<string, LucideIcon> = {
-  Palette, Video, Globe, Sparkles, Share2, PenTool
+  Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText,
+  Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users,
+  Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Wrench,
+  Zap, Star, Rocket, Target, Award
 };
 
 interface StoredService {
