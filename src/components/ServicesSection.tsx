@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { 
-  Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, ExternalLink, Plus, Trash2, Award,
+  Palette, Video, Globe, Sparkles, Share2, PenTool, Settings, Plus, Trash2, Award,
   Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen,
   Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush,
   Wrench, Zap, Star, Rocket, Target,
@@ -186,30 +186,31 @@ const ServicesSection = () => {
                   </span>
                 )}
                 
-                <div className="absolute top-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleShare(service.title);
-                    }}
-                    className="p-2 rounded-lg bg-muted/50 hover:bg-primary/20 transition-colors"
-                    aria-label={`Share ${service.title}`}
-                  >
-                    <ExternalLink className="w-4 h-4 text-muted-foreground hover:text-primary" />
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleRemoveService(index);
-                    }}
-                    className="p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 transition-colors"
-                    aria-label={`Remove ${service.title}`}
-                  >
-                    <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
-                  </button>
-                </div>
+                {/* Share Button - Always visible */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShare(service.title);
+                  }}
+                  className="absolute top-4 left-4 p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-110 hover:shadow-glow"
+                  aria-label={`Share ${service.title}`}
+                >
+                  <Share2 className="w-4 h-4 text-primary" />
+                </button>
+                
+                {/* Delete Button - On hover */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemoveService(index);
+                  }}
+                  className="absolute bottom-4 right-4 p-2 rounded-lg bg-muted/50 hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-all duration-300"
+                  aria-label={`Remove ${service.title}`}
+                >
+                  <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                </button>
                 
                 <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 group-hover:shadow-glow transition-all">
                   <IconComponent className="w-7 h-7 text-primary" />
