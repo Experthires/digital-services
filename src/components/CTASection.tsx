@@ -30,13 +30,16 @@ const CTASection = () => {
             Join millions of businesses getting work done smarter.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col gap-3 items-center">
             <Button variant="hero" size="xl" asChild>
               <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
                 Hire a Freelancer Today
                 <ArrowRight className="w-5 h-5" />
               </a>
             </Button>
+            <p className="text-sm text-muted-foreground italic">
+              Where the right decision meets perfect timing
+            </p>
           </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
