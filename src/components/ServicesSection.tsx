@@ -181,19 +181,19 @@ const ServicesSection = () => {
                 </div>
                 
                 {service.popular && (
-                  <span className="absolute top-4 right-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
+                  <span className="absolute top-4 left-4 px-3 py-1 text-xs font-semibold bg-primary/20 text-primary rounded-full">
                     Popular
                   </span>
                 )}
                 
-                {/* Share Button - Always visible */}
+                {/* Share Button - Always visible, top right */}
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleShare(service.title);
                   }}
-                  className="absolute top-4 left-4 p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-110 hover:shadow-glow"
+                  className="absolute top-4 right-4 p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 hover:scale-110 hover:shadow-glow z-10"
                   aria-label={`Share ${service.title}`}
                 >
                   <Share2 className="w-4 h-4 text-primary" />
