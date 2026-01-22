@@ -37,7 +37,7 @@ const CTASection = () => {
                 <ArrowRight className="w-5 h-5" />
               </a>
             </Button>
-            <p className="text-sm text-muted-foreground italic">
+            <p className="text-base md:text-lg text-muted-foreground italic">
               Where the right decision meets perfect timing
             </p>
           </div>
