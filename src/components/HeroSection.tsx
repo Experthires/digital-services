@@ -44,7 +44,7 @@ const HeroSection = () => {
               asChild
             >
               <a href={getMainAffiliateLink() || "#"} target="_blank" rel="noopener noreferrer">
-                Get Started on Fiverr
+                Get Started With Us
                 <ArrowRight className="w-5 h-5" />
               </a>
             </Button>
