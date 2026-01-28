@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, type LucideIcon } from "lucide-react";
+import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Lock, type LucideIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { areLinksLocked, lockLinks, hasLinksBeenSet } from "@/hooks/useSecurityMeasures";
 
 interface ManageLinksModalProps {
   open: boolean;
@@ -46,29 +47,48 @@ export const getMainAffiliateLink = (): string => {
 const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
   const [mainLink, setMainLink] = useState("");
   const [services, setServices] = useState<StoredService[]>([]);
+  const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
     if (open) {
       setMainLink(getMainAffiliateLink());
       setServices(getStoredServices());
+      setIsLocked(areLinksLocked());
     }
   }, [open]);
 
   const handleServiceLinkChange = (index: number, value: string) => {
+    if (isLocked) return;
     const updatedServices = [...services];
     updatedServices[index] = { ...updatedServices[index], affiliateLink: value };
     setServices(updatedServices);
   };
 
   const handleSave = () => {
+    if (isLocked) {
+      toast.error("Links are locked and cannot be modified.");
+      return;
+    }
     localStorage.setItem("mainAffiliateLink", mainLink);
     localStorage.setItem("customServices", JSON.stringify(services));
-    window.dispatchEvent(new CustomEvent('servicesUpdated'));
-    toast.success("Links saved successfully!");
+    
+    // Lock links after first save if a main link has been set
+    if (mainLink && mainLink.trim() !== "") {
+      lockLinks();
+      setIsLocked(true);
+      toast.success("Links saved and locked permanently!");
+    } else {
+      window.dispatchEvent(new CustomEvent('servicesUpdated'));
+      toast.success("Links saved successfully!");
+    }
     onOpenChange(false);
   };
 
   const handleReset = () => {
+    if (isLocked) {
+      toast.error("Links are locked and cannot be reset.");
+      return;
+    }
     setMainLink("");
     const resetServices = services.map(s => ({ ...s, affiliateLink: "" }));
     setServices(resetServices);
@@ -78,6 +98,10 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
   };
 
   const handleRemoveService = (index: number) => {
+    if (isLocked) {
+      toast.error("Services cannot be removed when links are locked.");
+      return;
+    }
     const updatedServices = services.filter((_, i) => i !== index);
     setServices(updatedServices);
     localStorage.setItem("customServices", JSON.stringify(updatedServices));
@@ -94,11 +118,14 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
       <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Link className="w-5 h-5 text-primary" />
-            Manage My Links
+            {isLocked ? <Lock className="w-5 h-5 text-destructive" /> : <Link className="w-5 h-5 text-primary" />}
+            {isLocked ? "Links Locked" : "Manage My Links"}
           </DialogTitle>
           <DialogDescription>
-            Configure affiliate links for your services.
+            {isLocked 
+              ? "Your affiliate links have been permanently locked and cannot be modified."
+              : "Configure affiliate links for your services. Links will be locked after first save."
+            }
           </DialogDescription>
         </DialogHeader>
 
@@ -123,8 +150,9 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                     type="url"
                     placeholder="https://go.fiverr.com/visit/?bta=YOUR_ID&brand=fiverrhybrid"
                     value={mainLink}
-                    onChange={(e) => setMainLink(e.target.value)}
+                    onChange={(e) => !isLocked && setMainLink(e.target.value)}
                     className="bg-background"
+                    disabled={isLocked}
                   />
                 </div>
 
@@ -153,6 +181,7 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                         value={service.affiliateLink || ""}
                         onChange={(e) => handleServiceLinkChange(index, e.target.value)}
                         className="bg-background"
+                        disabled={isLocked}
                       />
                     </div>
                   );
@@ -195,14 +224,16 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                             {service.affiliateLink ? "Custom link set" : "Using main link"}
                           </p>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => handleRemoveService(index)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        {!isLocked && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+                            onClick={() => handleRemoveService(index)}
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        )}
                       </div>
                     );
                   })
@@ -213,13 +244,22 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
         </Tabs>
 
         <DialogFooter className="flex-col sm:flex-row gap-2 pt-4 border-t border-border">
-          <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
-            Reset Links
-          </Button>
-          <Button onClick={handleSave} className="w-full sm:w-auto gap-2">
-            <Save className="w-4 h-4" />
-            Save Links
-          </Button>
+          {isLocked ? (
+            <div className="flex items-center gap-2 text-muted-foreground w-full justify-center">
+              <Lock className="w-4 h-4" />
+              <span className="text-sm">Links are permanently locked</span>
+            </div>
+          ) : (
+            <>
+              <Button variant="outline" onClick={handleReset} className="w-full sm:w-auto">
+                Reset Links
+              </Button>
+              <Button onClick={handleSave} className="w-full sm:w-auto gap-2">
+                <Save className="w-4 h-4" />
+                Save & Lock Links
+              </Button>
+            </>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
