@@ -90,9 +90,26 @@ export const useSecurityMeasures = () => {
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('dragstart', handleDragStart);
 
+    // Disable print via window.print override
+    const originalPrint = window.print;
+    window.print = () => {};
+
+    // Disable image dragging globally
+    const images = document.querySelectorAll('img');
+    images.forEach(img => {
+      img.setAttribute('draggable', 'false');
+      img.style.pointerEvents = 'none';
+    });
+
     // Apply CSS to disable selection
     document.body.style.userSelect = 'none';
     document.body.style.webkitUserSelect = 'none';
+
+    // Prevent opening in iframe (clickjacking)
+    if (window.self !== window.top) {
+      document.body.innerHTML = '';
+      window.top!.location.href = window.self.location.href;
+    }
 
     // Cleanup
     return () => {
@@ -103,6 +120,11 @@ export const useSecurityMeasures = () => {
       document.removeEventListener('dragstart', handleDragStart);
       document.body.style.userSelect = '';
       document.body.style.webkitUserSelect = '';
+      window.print = originalPrint;
+      images.forEach(img => {
+        img.removeAttribute('draggable');
+        img.style.pointerEvents = '';
+      });
     };
   }, []);
 };
