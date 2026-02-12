@@ -129,7 +129,6 @@ const ServicesSection = () => {
     const updatedServices = [...services, newService];
     setServices(updatedServices);
     localStorage.setItem("customServices", JSON.stringify(updatedServices));
-    window.dispatchEvent(new CustomEvent('servicesUpdated'));
   };
 
   const handleRemoveService = (index: number) => {

@@ -75,23 +75,6 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
     }
   }, [open]);
 
-  // Live sync: update services list when services are added/removed elsewhere
-  useEffect(() => {
-    const handleServicesUpdate = () => {
-      const updated = getStoredServices();
-      // Preserve any affiliate links already set
-      setServices(prev => {
-        const linkMap = new Map(prev.map(s => [s.title, s.affiliateLink]));
-        return updated.map(s => ({
-          ...s,
-          affiliateLink: s.affiliateLink || linkMap.get(s.title) || "",
-        }));
-      });
-    };
-    window.addEventListener('servicesUpdated', handleServicesUpdate);
-    return () => window.removeEventListener('servicesUpdated', handleServicesUpdate);
-  }, []);
-
   const handlePasswordSubmit = () => {
     if (isSettingPassword) {
       if (passwordInput.length < 6) {
