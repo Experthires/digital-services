@@ -11,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Lock, type LucideIcon } from "lucide-react";
+import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Lock, ClipboardPaste, type LucideIcon } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { areLinksLocked, lockLinks, hasLinksBeenSet } from "@/hooks/useSecurityMeasures";
 
 interface ManageLinksModalProps {
@@ -62,6 +63,8 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
   const [passwordInput, setPasswordInput] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [bulkPasteText, setBulkPasteText] = useState("");
+  const [showBulkPaste, setShowBulkPaste] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -114,6 +117,22 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
         setPasswordInput("");
       }
     }
+  };
+
+  const handleBulkPaste = () => {
+    if (isLocked) return;
+    const links = bulkPasteText
+      .split("\n")
+      .map(l => l.trim())
+      .filter(l => l.length > 0);
+    const updatedServices = services.map((s, i) => ({
+      ...s,
+      affiliateLink: links[i] || s.affiliateLink || "",
+    }));
+    setServices(updatedServices);
+    setBulkPasteText("");
+    setShowBulkPaste(false);
+    toast.success(`Applied ${Math.min(links.length, services.length)} links to services`);
   };
 
   const handleServiceLinkChange = (index: number, value: string) => {
@@ -268,9 +287,40 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
 
                     {services.length > 0 && (
                       <div className="border-t border-border pt-4 mt-4">
-                        <p className="text-sm font-medium text-muted-foreground mb-4">
-                          Service-Specific Links (optional)
-                        </p>
+                        <div className="flex items-center justify-between mb-4">
+                          <p className="text-sm font-medium text-muted-foreground">
+                            Service-Specific Links (optional)
+                          </p>
+                          {!isLocked && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-xs h-7"
+                              onClick={() => setShowBulkPaste(!showBulkPaste)}
+                            >
+                              <ClipboardPaste className="w-3.5 h-3.5" />
+                              Bulk Paste
+                            </Button>
+                          )}
+                        </div>
+                        {showBulkPaste && !isLocked && (
+                          <div className="space-y-2 mb-4 p-3 rounded-lg bg-muted/50 border border-border">
+                            <Label className="text-xs text-muted-foreground">
+                              Paste one link per line — mapped to services in order ({services.length} services)
+                            </Label>
+                            <Textarea
+                              placeholder={services.slice(0, 3).map((s, i) => `Line ${i + 1}: link for "${s.title}"`).join("\n")}
+                              value={bulkPasteText}
+                              onChange={(e) => setBulkPasteText(e.target.value)}
+                              className="bg-background text-xs min-h-[100px]"
+                              rows={Math.min(services.length, 6)}
+                            />
+                            <Button size="sm" onClick={handleBulkPaste} className="w-full gap-1.5 h-8 text-xs">
+                              <ClipboardPaste className="w-3.5 h-3.5" />
+                              Apply {bulkPasteText.split("\n").filter(l => l.trim()).length} Links
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     )}
 
