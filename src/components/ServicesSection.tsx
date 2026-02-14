@@ -303,9 +303,23 @@ const ServicesSection = () => {
                   {service.description}
                 </p>
                 
-                <p className="text-primary font-semibold">
+                <p className="text-primary font-semibold mb-4">
                   {service.price}
                 </p>
+                
+                <Button
+                  variant="cta"
+                  size="sm"
+                  className="w-full gap-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    window.open(affiliateUrl, '_blank', 'noopener,noreferrer');
+                  }}
+                >
+                  <Briefcase className="w-4 h-4" />
+                  Hire a {service.title.replace(/ & .*| Services?/gi, '')} Expert
+                </Button>
               </a>
             );
           })}
