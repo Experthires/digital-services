@@ -229,21 +229,25 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
               </DialogDescription>
             </DialogHeader>
 
-            <Tabs defaultValue="links" className="flex-1 overflow-hidden flex flex-col">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="links">Affiliate Links</TabsTrigger>
-                <TabsTrigger value="services">My Services ({services.length})</TabsTrigger>
+            <Tabs defaultValue="main" className="flex-1 overflow-hidden flex flex-col">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="main">Main Link</TabsTrigger>
+                <TabsTrigger value="sub">Sub Links ({services.length})</TabsTrigger>
+                <TabsTrigger value="services">My Services</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="links" className="flex-1 overflow-hidden">
+              {/* Main Affiliate Link Tab */}
+              <TabsContent value="main" className="flex-1 overflow-hidden">
                 <ScrollArea className="h-[40vh]">
                   <div className="space-y-4 py-4 pr-4">
                     <div className="space-y-2">
                       <Label htmlFor="mainLink" className="text-sm font-medium flex items-center gap-2">
                         <ExternalLink className="w-4 h-4 text-primary" />
                         Main Affiliate Link
-                        <span className="text-xs text-muted-foreground">(Fallback for all services)</span>
                       </Label>
+                      <p className="text-xs text-muted-foreground">
+                        This is the default fallback link used when no sub-affiliate link is set for a service.
+                      </p>
                       <Input
                         id="mainLink"
                         type="url"
@@ -254,41 +258,47 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                         disabled={isLocked}
                       />
                     </div>
+                  </div>
+                </ScrollArea>
+              </TabsContent>
 
-                    {services.length > 0 && (
-                      <div className="border-t border-border pt-4 mt-4">
-                        <p className="text-sm font-medium text-muted-foreground mb-4">
-                          Service-Specific Links (optional)
-                        </p>
-                      </div>
-                    )}
+              {/* Sub Affiliate Links Tab */}
+              <TabsContent value="sub" className="flex-1 overflow-hidden">
+                <ScrollArea className="h-[40vh]">
+                  <div className="space-y-4 py-4 pr-4">
+                    <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg border border-border">
+                      Paste a unique Fiverr sub-affiliate link for each service. These links are connected to the <strong>"Hire a … Expert"</strong> CTA button on each service card. Leave blank to use the main link.
+                    </p>
 
-                    {services.map((service, index) => {
-                      const IconComponent = getIcon(service.iconName);
-                      return (
-                        <div key={index} className="space-y-2">
-                          <Label htmlFor={`service-${index}`} className="text-sm font-medium flex items-center gap-2">
-                            <IconComponent className="w-4 h-4 text-primary" />
-                            {service.title}
-                          </Label>
-                          <Input
-                            id={`service-${index}`}
-                            type="url"
-                            placeholder="Leave blank to use main link"
-                            value={service.affiliateLink || ""}
-                            onChange={(e) => handleServiceLinkChange(index, e.target.value)}
-                            className="bg-background"
-                            disabled={isLocked}
-                          />
-                        </div>
-                      );
-                    })}
-
-                    {services.length === 0 && (
-                      <div className="text-center py-8 text-muted-foreground border-t border-border mt-4">
+                    {services.length > 0 ? (
+                      services.map((service, index) => {
+                        const IconComponent = getIcon(service.iconName);
+                        return (
+                          <div key={index} className="space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border">
+                            <Label htmlFor={`sub-${index}`} className="text-sm font-medium flex items-center gap-2">
+                              <IconComponent className="w-4 h-4 text-primary" />
+                              {service.title}
+                              <span className="ml-auto text-[10px] font-normal text-muted-foreground">
+                                {service.affiliateLink ? "✓ Custom link" : "Using main link"}
+                              </span>
+                            </Label>
+                            <Input
+                              id={`sub-${index}`}
+                              type="url"
+                              placeholder={`Fiverr sub-link for ${service.title}`}
+                              value={service.affiliateLink || ""}
+                              onChange={(e) => handleServiceLinkChange(index, e.target.value)}
+                              className="bg-background text-sm h-9"
+                              disabled={isLocked}
+                            />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-8 text-muted-foreground">
                         <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
                         <p className="text-sm">No services added yet.</p>
-                        <p className="text-xs mt-1">Add services from the Service Library to set individual links.</p>
+                        <p className="text-xs mt-1">Add services from the "My Services" tab first.</p>
                       </div>
                     )}
                   </div>
