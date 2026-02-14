@@ -265,35 +265,72 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
               {/* Sub Affiliate Links Tab */}
               <TabsContent value="sub" className="flex-1 overflow-hidden">
                 <ScrollArea className="h-[40vh]">
-                  <div className="space-y-4 py-4 pr-4">
-                    <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg border border-border">
-                      Paste a unique Fiverr sub-affiliate link for each service. These links are connected to the <strong>"Hire a … Expert"</strong> CTA button on each service card. Leave blank to use the main link.
+                  <div className="space-y-1 py-4 pr-4">
+                    <p className="text-xs text-muted-foreground bg-muted/50 p-3 rounded-lg border border-border mb-3">
+                      Each service has its own sub-affiliate link tab. These connect directly to the <strong>"Hire a … Expert"</strong> CTA button on each service card. Leave blank to use the main link.
                     </p>
 
                     {services.length > 0 ? (
-                      services.map((service, index) => {
-                        const IconComponent = getIcon(service.iconName);
-                        return (
-                          <div key={index} className="space-y-1.5 p-3 rounded-lg bg-muted/30 border border-border">
-                            <Label htmlFor={`sub-${index}`} className="text-sm font-medium flex items-center gap-2">
-                              <IconComponent className="w-4 h-4 text-primary" />
-                              {service.title}
-                              <span className="ml-auto text-[10px] font-normal text-muted-foreground">
-                                {service.affiliateLink ? "✓ Custom link" : "Using main link"}
-                              </span>
-                            </Label>
-                            <Input
-                              id={`sub-${index}`}
-                              type="url"
-                              placeholder={`Fiverr sub-link for ${service.title}`}
-                              value={service.affiliateLink || ""}
-                              onChange={(e) => handleServiceLinkChange(index, e.target.value)}
-                              className="bg-background text-sm h-9"
-                              disabled={isLocked}
-                            />
-                          </div>
-                        );
-                      })
+                      <Tabs defaultValue="sub-0" className="w-full">
+                        <TabsList className="flex flex-wrap h-auto gap-1 bg-muted/50 p-1.5 rounded-lg">
+                          {services.map((service, index) => {
+                            const IconComponent = getIcon(service.iconName);
+                            return (
+                              <TabsTrigger
+                                key={index}
+                                value={`sub-${index}`}
+                                className="text-xs gap-1.5 px-2.5 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                              >
+                                <IconComponent className="w-3 h-3" />
+                                {service.title}
+                                {service.affiliateLink && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
+                                )}
+                              </TabsTrigger>
+                            );
+                          })}
+                        </TabsList>
+
+                        {services.map((service, index) => {
+                          const IconComponent = getIcon(service.iconName);
+                          return (
+                            <TabsContent key={index} value={`sub-${index}`} className="mt-3">
+                              <div className="p-4 rounded-lg border border-border bg-muted/20 space-y-3">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                    <IconComponent className="w-5 h-5 text-primary" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-sm">{service.title}</h4>
+                                    <p className="text-[11px] text-muted-foreground">
+                                      {service.affiliateLink ? "✓ Custom sub-link active" : "⚠ Using main fallback link"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                  <Label htmlFor={`sublink-${index}`} className="text-xs font-medium flex items-center gap-1.5">
+                                    <Link className="w-3 h-3 text-primary" />
+                                    Sub-Affiliate Link
+                                  </Label>
+                                  <Input
+                                    id={`sublink-${index}`}
+                                    type="url"
+                                    placeholder={`https://go.fiverr.com/visit/?bta=YOUR_ID&brand=fp&landingPage=...`}
+                                    value={service.affiliateLink || ""}
+                                    onChange={(e) => handleServiceLinkChange(index, e.target.value)}
+                                    className="bg-background text-sm h-9"
+                                    disabled={isLocked}
+                                  />
+                                  <p className="text-[10px] text-muted-foreground">
+                                    Paste a targeted Fiverr link for <strong>{service.title}</strong>. This overrides the main link on this card's CTA.
+                                  </p>
+                                </div>
+                              </div>
+                            </TabsContent>
+                          );
+                        })}
+                      </Tabs>
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
