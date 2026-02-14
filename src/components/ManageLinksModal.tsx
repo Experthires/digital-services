@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Lock, type LucideIcon } from "lucide-react";
+import { Save, Link, ExternalLink, Trash2, Palette, Video, Globe, Sparkles, Share2, PenTool, Music, Camera, Mic, FileText, Code, Smartphone, TrendingUp, BarChart, Mail, BookOpen, Gamepad2, Building, Users, Heart, ShoppingCart, Briefcase, Megaphone, Film, Layers, Box, Paintbrush, Lock, Plus, type LucideIcon } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { areLinksLocked, lockLinks, hasLinksBeenSet } from "@/hooks/useSecurityMeasures";
@@ -62,6 +63,11 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
   const [passwordInput, setPasswordInput] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [isAddingService, setIsAddingService] = useState(false);
+  const [newServiceTitle, setNewServiceTitle] = useState("");
+  const [newServiceDescription, setNewServiceDescription] = useState("");
+  const [newServicePrice, setNewServicePrice] = useState("");
+  const [newServiceIcon, setNewServiceIcon] = useState("Briefcase");
 
   useEffect(() => {
     if (open) {
@@ -292,11 +298,11 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
               <TabsContent value="services" className="flex-1 overflow-hidden">
                 <ScrollArea className="h-[40vh]">
                   <div className="space-y-3 py-4 pr-4">
-                    {services.length === 0 ? (
+                    {services.length === 0 && !isAddingService ? (
                       <div className="text-center py-8 text-muted-foreground">
                         <Layers className="w-12 h-12 mx-auto mb-3 opacity-50" />
                         <p className="text-sm">No services added yet.</p>
-                        <p className="text-xs mt-1">Add services from the Service Library.</p>
+                        <p className="text-xs mt-1">Click "Add New Service" below to get started.</p>
                       </div>
                     ) : (
                       services.map((service, index) => {
@@ -328,6 +334,120 @@ const ManageLinksModal = ({ open, onOpenChange }: ManageLinksModalProps) => {
                           </div>
                         );
                       })
+                    )}
+
+                    {/* Add New Service Form */}
+                    {isAddingService && !isLocked && (
+                      <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 space-y-3">
+                        <h4 className="text-sm font-semibold flex items-center gap-2">
+                          <Plus className="w-4 h-4 text-primary" />
+                          Add New Service
+                        </h4>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Service Title</Label>
+                          <Input
+                            placeholder="e.g. SEO Optimization"
+                            value={newServiceTitle}
+                            onChange={(e) => setNewServiceTitle(e.target.value)}
+                            className="bg-background h-9 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Description</Label>
+                          <Textarea
+                            placeholder="Short description of the service"
+                            value={newServiceDescription}
+                            onChange={(e) => setNewServiceDescription(e.target.value)}
+                            className="bg-background text-sm min-h-[60px]"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Starting Price</Label>
+                          <Input
+                            placeholder="e.g. Starting at $10"
+                            value={newServicePrice}
+                            onChange={(e) => setNewServicePrice(e.target.value)}
+                            className="bg-background h-9 text-sm"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs">Icon</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {Object.entries(iconMap).slice(0, 12).map(([name, Icon]) => (
+                              <button
+                                key={name}
+                                type="button"
+                                onClick={() => setNewServiceIcon(name)}
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${
+                                  newServiceIcon === name 
+                                    ? "border-primary bg-primary/20 text-primary" 
+                                    : "border-border bg-muted/50 text-muted-foreground hover:border-primary/50"
+                                }`}
+                              >
+                                <Icon className="w-4 h-4" />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => {
+                              setIsAddingService(false);
+                              setNewServiceTitle("");
+                              setNewServiceDescription("");
+                              setNewServicePrice("");
+                              setNewServiceIcon("Briefcase");
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            size="sm"
+                            className="flex-1 gap-1"
+                            onClick={() => {
+                              if (!newServiceTitle.trim()) {
+                                toast.error("Service title is required.");
+                                return;
+                              }
+                              const newService: StoredService = {
+                                iconName: newServiceIcon,
+                                title: newServiceTitle.trim(),
+                                description: newServiceDescription.trim() || "Professional service",
+                                price: newServicePrice.trim() || "Starting at $5",
+                                popular: false,
+                              };
+                              const updated = [...services, newService];
+                              setServices(updated);
+                              localStorage.setItem("customServices", JSON.stringify(updated));
+                              window.dispatchEvent(new CustomEvent('servicesUpdated'));
+                              setIsAddingService(false);
+                              setNewServiceTitle("");
+                              setNewServiceDescription("");
+                              setNewServicePrice("");
+                              setNewServiceIcon("Briefcase");
+                              toast.success(`"${newService.title}" added!`);
+                            }}
+                          >
+                            <Plus className="w-3 h-3" />
+                            Add
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Add New Service Button */}
+                    {!isAddingService && !isLocked && (
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2 border-dashed border-primary/30 text-primary hover:bg-primary/5"
+                        onClick={() => setIsAddingService(true)}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add New Service
+                      </Button>
                     )}
                   </div>
                 </ScrollArea>
